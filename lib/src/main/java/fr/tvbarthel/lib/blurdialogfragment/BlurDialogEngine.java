@@ -589,14 +589,22 @@ public class BlurDialogEngine {
         @Override
         protected Void doInBackground(Void... params) {
             //process to the blue
-            if (!isCancelled()) {
-                blur(mBackground, mBackgroundView);
-            } else {
+            try {
+                if (!isCancelled()) {
+                    blur(mBackground, mBackgroundView);
+                } else {
+                    return null;
+                }
+                //clear memory
+                mBackground.recycle();
+                return null;
+            } catch (Exception e) {
+                if (mBluringTask != null) {
+                    mBluringTask.cancel(true);
+                    mBluringTask = null;
+                }
                 return null;
             }
-            //clear memory
-            mBackground.recycle();
-            return null;
         }
 
         @Override
