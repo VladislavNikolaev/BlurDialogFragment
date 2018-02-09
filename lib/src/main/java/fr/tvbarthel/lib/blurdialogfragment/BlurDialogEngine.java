@@ -162,8 +162,7 @@ public class BlurDialogEngine {
     public void onResume(boolean retainedInstance) {
         if (mBlurredBackgroundView == null || retainedInstance) {
             if (mHoldingActivity.getWindow().getDecorView().isShown()) {
-                mBluringTask = new BlurAsyncTask();
-                mBluringTask.execute();
+                startBlurTask();
             } else {
                 mHoldingActivity.getWindow().getDecorView().getViewTreeObserver().addOnPreDrawListener(
                         new ViewTreeObserver.OnPreDrawListener() {
@@ -173,8 +172,7 @@ public class BlurDialogEngine {
                                 if (mHoldingActivity != null) {
                                     mHoldingActivity.getWindow().getDecorView()
                                             .getViewTreeObserver().removeOnPreDrawListener(this);
-                                    mBluringTask = new BlurAsyncTask();
-                                    mBluringTask.execute();
+                                    startBlurTask();
                                 }
                                 return true;
                             }
@@ -182,6 +180,15 @@ public class BlurDialogEngine {
                 );
             }
         }
+    }
+
+    private void startBlurTask() {
+        if (mBluringTask != null) {
+            mBluringTask.cancel(true);
+            removeBlurredView();
+        }
+        mBluringTask = new BlurAsyncTask();
+        mBluringTask.execute();
     }
 
     /**
